@@ -1,32 +1,51 @@
+// pasar metodos 
+const cocina = require("./cocina.js");
+const caja = require("./caja.js");
+const readline = require("readline");
+// leer datos en terminal
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 console.log("¡Bienvenido a CoffeeCode!");
 
+cocina.agregarProducto("galleta", 50);
+console.log("---------------------------------");
 console.log("Consultar productos disponibles:");
-productos = ["Café", "Té", "Chocolate", "Galletas", "Pasteles"];
-function listarProductos(productos) {
-    if(productos.length <= 0) {
-        console.log("No hay productos disponibles");
-    }
-    if(productos.length > 0) {
-        for(let i=0; i<productos.length; i++) {
-            console.log("Producto "+(i+1)+": "+productos[i]);
-        }
+console.log("----------------------------------");
 
-    }
-}
-listarProductos(productos);
-console.log("Crear pedidos de productos:");
-function crearPedido(producto, cantidad ) {
-    console.log("Pedido creado: "+producto+" - Cantidad: "+cantidad);
-}
-crearPedido("Café", 2);
-console.log("Listar pedidos:");
+cocina.mostrar();
+
 function listarPedidos(pedidos) {
-    if(pedidos.length <= 0) {
-        console.log("No hay pedidos disponibles");
-    }
-    if(pedidos.length > 0) {
-        for(let i=0; i<pedidos.length; i++) {
-            console.log("Pedido "+(i+1)+": "+pedidos[i].producto+" - Cantidad: "+pedidos[i].cantidad);
+    
+    console.log("----------------------------------");
+    console.log("Listar pedidos:");
+    console.log("----------------------------------");
+
+    const pedidoss = caja.obtenerPedidos();
+        for(let i=0; i<pedidoss.length; i++) {
+            console.log(" Pedido "+(i+1)+": "+pedidoss[i].producto+" - Cantidad: "+pedidoss[i].cantidad+" - Precio: $"+pedidoss[i].precio+" - Subtotal: $"+pedidoss[i].subtotal);
         }
-    }
+        console.log("Total acumulado: $"+caja.obtenerTotal());
+} 
+
+console.log("----------------------------------");
+console.log("Crear pedidos de productos:");
+console.log("----------------------------------");
+
+function crearPedido() {
+    rl.question("Ingrese el nombre del producto: ", (producto) => {
+        rl.question("Ingrese la cantidad: ", (cantidad) => {
+            rl.question("Ingrese el precio: ", (precio) => {
+
+            caja.agregarPedido(producto, precio, cantidad);
+            console.log("Pedido creado: " + producto + "- Precio: $" + precio + " - Cantidad: " + cantidad);
+            listarPedidos();
+           rl.close();
+            });
+        });
+     });
+    
 }
+crearPedido();
