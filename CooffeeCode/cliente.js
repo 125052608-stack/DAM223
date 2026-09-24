@@ -74,5 +74,5 @@ function productosDisponibles() {
     console.log("Consultar productos disponibles:");
     console.log("----------------------------------");
     cocina.menu.map(({ producto, precio }, i) =>
-        console.log(`${i + 1}. ${producto} - $${precio.toFixed(2)}`));
+        console.log(`Producto ${i + 1}: ${producto} - Precio: $${precio}`));
 }
