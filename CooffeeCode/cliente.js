@@ -24,24 +24,32 @@ function listarPedidos(pedidos) {
     console.log("----------------------------------");
 
     const pedidoss = caja.obtenerPedidos();
-        for(let i=0; i<pedidoss.length; i++) {
-            console.log(" Pedido "+(i+1)+": "+pedidoss[i].producto+" - Cantidad: "+pedidoss[i].cantidad+" - Precio: $"+pedidoss[i].precio+" - Subtotal: $"+pedidoss[i].subtotal);
+        for (let i=0; i<pedidoss.length; i++) {
+            console.log(" Pedido "+(i+1)+": "+pedidoss[i].producto+" - Cantidad: "+pedidoss[i].cantidad+" - Precio: $"+pedidoss[i].precio+" - Subtotal: $"+caja.obtenerPedidos()[i].subtotal);
         }
         console.log("Total acumulado: $"+caja.obtenerTotal());
 } 
 
-console.log("----------------------------------");
-console.log("Crear pedidos de productos:");
-console.log("----------------------------------");
+
 
 function crearPedido() {
+    console.log("----------------------------------");
+    console.log("Crear pedidos de productos:");
+    console.log("----------------------------------");
     rl.question("Ingrese el nombre del producto: ", (producto) => {
         rl.question("Ingrese la cantidad: ", (cantidad) => {
             rl.question("Ingrese el precio: ", (precio) => {
 
-            caja.agregarPedido(producto, precio, cantidad);
-            console.log("Pedido creado: " + producto + "- Precio: $" + precio + " - Cantidad: " + cantidad);
+                //se convierte texto a numero evita errores 
+                const subcantidad = Number(cantidad);
+                const subprecioo = Number(precio);
+
+            caja.agregarPedido(producto, subprecioo, subcantidad);
+            console.log("Pedido creado: " + producto + "- Precio: $" + subprecioo + " - Cantidad: " + subcantidad);
             listarPedidos();
+
+            mostrarPromociones();
+            productosDisponibles();
            rl.close();
             });
         });
@@ -49,3 +57,22 @@ function crearPedido() {
     
 }
 crearPedido();
+
+/* PT 2 */
+
+function mostrarPromociones() {
+    console.log("---------------------------------");
+    console.log("Mostrar promociones:");
+    console.log("----------------------------------");
+
+    const baratos = cocina.productosBaratos();
+    baratos.forEach(item => console.log(`- Promo: ${item}`));
+}
+
+function productosDisponibles() {
+    console.log("---------------------------------");
+    console.log("Consultar productos disponibles:");
+    console.log("----------------------------------");
+    cocina.menu.map(({ producto, precio }, i) =>
+        console.log(`${i + 1}. ${producto} - $${precio.toFixed(2)}`));
+}
