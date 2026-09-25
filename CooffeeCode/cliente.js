@@ -8,59 +8,69 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-console.log("¡Bienvenido a CoffeeCode!");
+menu();
+function menu(){
+    console.log("\n¡Bienvenido a CoffeeCode!\n");
+    console.log("Elige una opcion");
+    console.log("1. Consultar productos");
+    console.log("2.Crear pedidos productos");
+    console.log("3. Listar pedidos");
+    console.log("4. Promociones");
+    console.log("5. Mostrar bebidas");
+    console.log("6. Mostrar estado del pedido");
+    console.log("7. SALIR");
 
-cocina.agregarProducto("galleta", 50);
-console.log("---------------------------------");
-console.log("Consultar productos disponibles:");
-console.log("----------------------------------");
-
-cocina.mostrar();
-
-function listarPedidos(pedidos) {
-    
-    console.log("----------------------------------");
-    console.log("Listar pedidos:");
-    console.log("----------------------------------");
-
-    const pedidoss = caja.obtenerPedidos();
-        for (let i=0; i<pedidoss.length; i++) {
-            console.log(" Pedido "+(i+1)+": "+pedidoss[i].producto+" - Cantidad: "+pedidoss[i].cantidad+" - Precio: $"+pedidoss[i].precio+" - Subtotal: $"+caja.obtenerPedidos()[i].subtotal);
+    rl.question("¿Que deseas hacer?\n", (opcion) => {
+        switch(opcion){
+            case '1':
+                consultarProductos();
+                menu();
+                break;
+            case '2':
+                crearPedido();
+                break;
+            case '3':
+                listarPedidos();
+                menu();
+                break;
+            case '4':
+                mostrarPromociones();
+                menu();
+                break;
+            case '5':
+                bebidasDisponibles();
+                menu();
+                break;
+            case '6':
+                procesarPedidoCliente();
+                break;
+            case '7':
+                console.log("Gracias por su visita!");
+                rl.close();
+                break;
+            default:
+                console.log("Elige una opción válida");
+                menu();
+                break;
         }
-        console.log("Total acumulado: $"+caja.obtenerTotal());
-} 
+    }
+        
+    )};
 
-
-
-function crearPedido() {
+function consultarProductos(){
+    cocina.agregarProducto("galleta", 50);
+    cocina.editaryBorrar();
+    console.log("");
+    console.log("---------------------------------");
+    console.log("Consultando productos disponibles:");
     console.log("----------------------------------");
-    console.log("Crear pedidos de productos:");
-    console.log("----------------------------------");
-    rl.question("Ingrese el nombre del producto: ", (producto) => {
-        rl.question("Ingrese la cantidad: ", (cantidad) => {
-            rl.question("Ingrese el precio: ", (precio) => {
 
-                //se convierte texto a numero evita errores 
-                const subcantidad = Number(cantidad);
-                const subprecioo = Number(precio);
-
-            caja.agregarPedido(producto, subprecioo, subcantidad);
-            console.log("Pedido creado: " + producto + "- Precio: $" + subprecioo + " - Cantidad: " + subcantidad);
-            listarPedidos();
-
-            mostrarPromociones();
-            productosDisponibles();
-           rl.close();
-            });
-        });
-     });
-    
+    cocina.mostrar();
 }
-crearPedido();
 
-/* PT 2 */
 
 function mostrarPromociones() {
+    console.log("");
     console.log("---------------------------------");
     console.log("Mostrar promociones:");
     console.log("----------------------------------");
@@ -69,10 +79,77 @@ function mostrarPromociones() {
     baratos.forEach(item => console.log(`- Promo: ${item}`));
 }
 
-function productosDisponibles() {
+function bebidasDisponibles() {
+    console.log("");
     console.log("---------------------------------");
-    console.log("Consultar productos disponibles:");
+    console.log("Consultar bebidas disponibles:");
     console.log("----------------------------------");
-    cocina.menu.map(({ producto, precio }, i) =>
-        console.log(`Producto ${i + 1}: ${producto} - Precio: $${precio}`));
+    const bebidas = cocina.buscarBebidas();
+    bebidas.forEach(bebida => console.log(`Producto: ${bebida} `))
 }
+
+
+function crearPedido() {
+    console.log("");
+    console.log("----------------------------------");
+    console.log("Crear pedidos de productos:");
+    console.log("----------------------------------");
+    rl.question("Ingrese el nombre del producto: ", (producto) => {
+        rl.question("Ingrese la cantidad: ", (cantidad) => {
+            rl.question("Ingrese el precio: ", (precio) => {
+
+
+            caja.agregarPedido(producto,precio,cantidad);
+            console.log("Pedido creado: " + producto + " - Cantidad: " + cantidad+ " - Precio: "+precio);
+            menu();
+        });
+        });
+     });
+    
+}
+
+
+function listarPedidos() {
+    console.log("");
+    console.log("----------------------------------");
+    console.log("Listar pedidos:");
+    console.log("----------------------------------");
+
+    const resumen = caja.caja();
+
+    // Mostramos cada producto formateado
+    resumen.listaPedidos.forEach(({ producto, cantidad, precio, subtotal }, i) => {
+        console.log(`Pedido ${i + 1}: ${producto} - Cantidad: ${cantidad} - Precio: $${precio} - Subtotal: $${subtotal}`);
+    });
+
+    // Desglose final de la caja
+    console.log("----------------------------------");
+    console.log(`Subtotal: $${resumen.subtotal.toFixed(2)}`);
+    console.log(`IVA (16%): $${resumen.iva.toFixed(2)}`);
+    console.log(`Total a pagar: $${resumen.total.toFixed(2)}`);
+} 
+
+function procesarPedidoCliente() {
+  rl.question("Ingrese el producto a pedir: ", (nombreProd) => {
+    setTimeout(() => {
+        console.log("\n Hallando producto en cocina...");
+        setTimeout(() => {
+            console.log("Esperando respuesta de caja...");
+            setTimeout(() => {
+              caja.validarYProcesarPedido(nombreProd, (error, exito) => {
+              if (error) {
+                console.log(`Error: ${error}`);
+              } else {
+                console.log("Pedido listo: No se generaron problemas");
+                console.log(`Estado: ${exito}`);
+              }
+              menu();
+            });  
+            }, 1000);
+        }, 3000);
+    }, 1000);   
+});
+}
+
+
+
