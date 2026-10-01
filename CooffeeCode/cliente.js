@@ -130,20 +130,20 @@ function listarPedidos() {
 } 
 
 function procesarPedidoCliente() {
-  rl.question("Ingrese el producto a pedir: ", (nombreProd) => {
+rl.question("Ingrese el producto a pedir: ", (nombreProd) => {
     setTimeout(() => {
         console.log("\n Hallando producto en cocina...");
         setTimeout(() => {
             console.log("Esperando respuesta de caja...");
             setTimeout(() => {
-              caja.validarYProcesarPedido(nombreProd, (error, exito) => {
-              if (error) {
+            caja.validarYProcesarPedido(nombreProd, (error, exito) => {
+            if (error) {
                 console.log(`Error: ${error}`);
-              } else {
+            } else {
                 console.log("Pedido listo: No se generaron problemas");
                 console.log(`Estado: ${exito}`);
-              }
-              menu();
+            }
+            menu();
             });  
             }, 1000);
         }, 3000);
