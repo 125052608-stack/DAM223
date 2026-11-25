@@ -14,3 +14,13 @@ jsx y js
 los lenguajes se conectan por medio de bridge
 
 ## EXPO
+Plataforma y conjunto de herramientas que facilita desarrollo con react native sin configuración compleja
+
+### EXPO GO
+Aplicación móvil que per,ite ejecutar y probar proyectos de expo directamente desde el celular mediante un código QR
+
+## Expo SDK
+- conjunto de herramientas para crear apps
+- Incluye librerías, APIs y utilidades
+- Facilita desarrollo de software
+

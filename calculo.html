@@ -1,0 +1,128 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- El head guarda info que en la pagina no c ve -->
+    <meta charset="utf-8">
+    <!-- charset para mostrar simbolos -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- viewport ayuda a q se ajuste a la pantalla -->
+    <title>Mi raster</title>
+
+    <!-- en style va adentro el css -->
+    <style>
+        /* body tipo deletra, ancho, etc de td la pagina */
+        body{font-family:system-ui,sans-serif;max-width:600px;margin:20px auto;padding:0 12px}
+        /* #grid = la matriz display:grid reparte sus hijos en filas y columnas; aspect-ratio:1 la hace cuadrada */
+        #grid{display:grid;width:100%;aspect-ratio:1;border:1px solid #999}
+        /* #info = texto con los datos de la celda min-height evita que la página salte al aparecer el texto */
+        #info{margin:8px 0;min-height:20px}
+        /* #legend = la leyenda: 5 columnas iguales (repeat(5,1fr)) separadas por 6px (gap) */
+        #legend{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+        /* "#legend div" = cada cuadro de color dentro de la leyenda: letra blanca, centrada, esquinas redondeadas */
+        #legend div{color:#fff;text-align:center;padding:6px;border-radius:6px;font-size:13px}
+    </style>
+
+</head>
+
+<body>
+<!-- body la parte visible de la pagina -->
+<h1> Proyecto Raster</h1>
+
+
+<!-- <label> es el texto de la casilla -->
+<label>Tamaño N <input id="n" type="number" min="2" max="40" value="16"></label>
+
+<select id="mode">
+
+
+    <option value="rand">Aleatorio</option>
+
+</select>
+<!-- button es un botón Su id sirve para que JavaScript lo encuentre -->
+<button id="go">Generar</button>
+
+<!-- <div> es una caja sin aspecto propio. #grid = la matriz, #info = datos de la celda, #legend = leyenda. -->
+<div id="grid"></div>
+<div id="info">Pasa el mouse por una celda</div>
+<div id="legend"></div>
+<!-- script abre el JavaScript -->
+<script>
+    // COLORS es un array de 10 colores
+
+    // La posición en la lista es el valor z: COLORS[0] es el color de z=0 y COLORS[9] el de z=9.
+
+    const COLORS = ["#1b1464","#2a3fa8","#1f78c8","#17a2b8","#22b573",
+        "#8cc63f","#f2e34c","#f7a531","#ee5a36","#b3123f"];
+
+    // FUNCIÓN pares(n): recibe el tamaño n y DEVUELVE la lista de todos los pares (x, y).
+    function pares(n){
+        const lista = [];                 // lista vacía donde guardaremos los pares
+        for (let y = 0; y < n; y++){      // ciclo d fulas hasta n
+            for (let x = 0; x < n; x++){    // ciclo de columnas
+                lista.push([x, y]);           // agrega al final de la lista el par [x, y]
+            }
+        }
+        return lista;
+    }
+
+    //  recibe la posición (x, y), el tamaño n y el modo; DEVUELVE un entero z entre 0 y 9.
+    function calcZ(x, y, n, modo){
+        let t; // t = número entre 0 y 1
+
+        if (modo === "rand") t = Math.random();                  // aleatorio: decimal al azar entre 0 y 1
+
+        // t*10 va de 0 a 10; floor redondea hacia abajo; max y min fuerzan el resultado a estar entre 0 y 9
+        return Math.min(9, Math.max(0, Math.floor(t * 10)));
+    }
+
+    const grid = document.getElementById("grid");  // getElementById busca en la página el elemento con ese id (la matriz)
+    const info = document.getElementById("info");  // el texto que muestra los datos de la celda
+    let Z = [];  // matriz de valores z (Z[y][x]);
+
+    //  lee los controles, recorre todos los pares y pinta una celda por cada uno.
+    function render(){
+        // parseInt convierte el texto de la casilla en número (si está vacía usa 16) max/min lo limitan entre 2 y 40
+        const n = Math.max(2, Math.min(40, parseInt(document.getElementById("n").value) || 16));
+        const modo = document.getElementById("mode").value;        // el modo elegido en la lista
+        Z = [];                                                    // vacía la matriz anterior
+        grid.style.gridTemplateColumns = "repeat(" + n + ", 1fr)"; // n columnas iguales (1fr = una fracción del ancho)
+        grid.innerHTML = "";                                       // borra las celdas del dibujo anterior
+        for (const [x, y] of pares(n)){            // por cada par (x, y) de la lista
+            const z = calcZ(x, y, n, modo);          // calcula su valor z
+            if (!Z[y]) Z[y] = [];                    // si la fila y todavía no existe, créala vacía
+            Z[y][x] = z;                             // guarda z en la matriz
+            const celda = document.createElement("div");  // createElement crea una caja nueva
+            celda.style.background = COLORS[z];      // z → color: busca el color de z en la paleta
+            celda.dataset.x = x;                     // dataset guarda datos dentro de la celda: x, y y z
+            celda.dataset.y = y;
+            celda.dataset.z = z;
+            grid.appendChild(celda);                 // appendChild mete la celda dentro de la matriz (la hace visible)
+        }
+    }
+
+
+    // addEventListener("pointermove", función) = "cuando el puntero se mueva sobre la matriz, ejecuta esta función".
+    grid.addEventListener("pointermove", function(e){
+        const c = e.target;                        // e.target = el elemento (la celda) que está bajo el puntero
+        if (c.dataset.z === undefined) return;     // si no tiene z no es una celda (p. ej. el borde): no hacer nada
+        info.textContent = "(x=" + c.dataset.x + ", y=" + c.dataset.y +
+            ") → z=" + c.dataset.z ;   // textContent cambia el texto de #info
+    });
+
+    // ── Leyenda de colores
+
+
+    document.getElementById("legend").innerHTML =
+        COLORS.map((c, i) => '<div style="background:' + c + '">z=' + i + '</div>').join("");
+
+
+    document.getElementById("go").addEventListener("click", render);
+
+    render();
+</script>
+
+</body>
+</html>
+

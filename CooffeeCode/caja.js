@@ -66,3 +66,4 @@ function validarYProcesarPedido(nombreProducto, callback) {
 }
 
 module.exports = {agregarPedido,obtenerPedidos,obtenerTotal,caja,validarYProcesarPedido};
+
