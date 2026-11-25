@@ -1,6 +1,6 @@
 import React from 'react';
-import {SafeAreaView,View,Text,FlatList,StyleSheet,
-} from 'react-native';
+import {SafeAreaView,View,Text,FlatList,StyleSheet,Pressable} from 'react-native';
+import {router} from "expo-router";
 
 export default function ConsultaUsuariosScreen() {
 
@@ -12,8 +12,13 @@ export default function ConsultaUsuariosScreen() {
     { id: '5', nombre: 'Luisa Martínez', edad: 28 },
   ];
 
-  const renderTarjeta = ({ item }) => (
-    <View style={styles.card}>
+  const renderTarjeta = ({ item }) => ( /* Se conecta screen de detalle desde consulta */
+    <Pressable onPress={ ()=>router.push({pathname: "/detalle",
+                        params:{id:item.id,nombre:item.nombre,edad:item.edad}
+              }) }
+    >
+      
+      <View style={styles.card}>
 
       <Text style={styles.nombre}>{item.nombre}</Text>
 
@@ -24,6 +29,8 @@ export default function ConsultaUsuariosScreen() {
       </Text>
 
     </View>
+    </Pressable>
+    
   );
 
   return (
